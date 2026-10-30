@@ -1,0 +1,1458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriTrack - Smart Food Diary</title>
+
+<style>
+:root{
+ --green:#287653;
+ --dark:#174b37;
+ --light:#eaf5ee;
+ --cream:#fbfaf5;
+ --orange:#e99a54;
+ --text:#26352e;
+ --border:#e4eae5;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:var(--cream);
+ color:var(--text);
+}
+header{
+ background:white;
+ padding:17px 5%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ flex-wrap:wrap;
+ position:sticky;
+ top:0;
+ z-index:5;
+ box-shadow:0 2px 12px #0000000b;
+}
+.logo{
+ font-size:25px;
+ font-weight:800;
+ color:var(--green);
+}
+.logo span{color:var(--orange)}
+nav{display:flex;gap:5px;flex-wrap:wrap}
+nav button{
+ border:0;
+ background:transparent;
+ padding:10px;
+ border-radius:9px;
+ cursor:pointer;
+ font-weight:bold;
+ color:var(--text);
+}
+nav button.active,nav button:hover{
+ background:var(--light);
+ color:var(--green);
+}
+main{max-width:1100px;margin:auto;padding:25px 18px}
+.page{display:none}
+.page.active{display:block}
+.hero{
+ background:linear-gradient(120deg,#e4f2e8,#f9f0df);
+ padding:42px 30px;
+ border-radius:20px;
+ margin-bottom:22px;
+}
+.hero h1{
+ font-size:38px;
+ color:var(--dark);
+ margin-top:0;
+}
+.hero p{line-height:1.6;max-width:650px}
+.card{
+ background:white;
+ border-radius:16px;
+ padding:22px;
+ margin-bottom:18px;
+ box-shadow:0 4px 18px #173d2910;
+}
+h2,h3{color:var(--dark)}
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+ gap:15px;
+}
+label{
+ display:block;
+ font-weight:bold;
+ margin:12px 0 6px;
+}
+input,select,textarea{
+ width:100%;
+ padding:11px;
+ border:1px solid #d9e2dc;
+ border-radius:9px;
+ font:inherit;
+ background:white;
+}
+textarea{min-height:80px;resize:vertical}
+.primary,.secondary,.danger{
+ padding:11px 16px;
+ border:0;
+ border-radius:9px;
+ font-weight:bold;
+ cursor:pointer;
+ margin:3px 2px;
+}
+.primary{background:var(--green);color:white}
+.primary:hover{background:var(--dark)}
+.secondary{background:var(--light);color:var(--dark)}
+.danger{background:#fff0ed;color:#a43b2e}
+.small{font-size:13px;color:#718078;line-height:1.5}
+.stat{
+ background:var(--light);
+ padding:16px;
+ border-radius:12px;
+}
+.stat strong{
+ display:block;
+ font-size:24px;
+ color:var(--green);
+ margin-top:7px;
+}
+.meal{
+ background:#f7faf7;
+ padding:13px;
+ border-radius:10px;
+ margin:10px 0;
+}
+.day{
+ border:1px solid var(--border);
+ border-radius:13px;
+ padding:15px;
+ margin:13px 0;
+}
+.food-row{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ padding:12px 0;
+ border-bottom:1px solid #eee;
+}
+.food-row:last-child{border:0}
+.notice{
+ padding:12px;
+ border-radius:9px;
+ background:#f4f7f4;
+ margin:12px 0;
+ line-height:1.5;
+}
+.error{background:#fff0ed;color:#9d352b}
+.success{background:var(--light);color:var(--dark)}
+.pill{
+ display:inline-block;
+ background:var(--light);
+ padding:5px 10px;
+ border-radius:20px;
+ font-size:12px;
+ margin:2px;
+}
+.section-title{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ flex-wrap:wrap;
+ gap:10px;
+}
+.empty{
+ text-align:center;
+ padding:20px;
+ color:#718078;
+ background:#f7faf7;
+ border-radius:10px;
+}
+footer{
+ text-align:center;
+ padding:25px;
+ color:#718078;
+ font-size:13px;
+}
+button:disabled{opacity:.6;cursor:wait}
+@media(max-width:650px){
+ header{position:static}
+ .hero h1{font-size:29px}
+ main{padding:15px 10px}
+ nav button{padding:8px;font-size:12px}
+ .card{padding:16px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">Nutri<span>Track</span> 🌿</div>
+ <nav>
+  <button class="active" onclick="showPage('home',this)">Home</button>
+  <button onclick="showPage('planner',this)">Meal Planner</button>
+  <button onclick="showPage('diary',this)">Food Diary</button>
+  <button onclick="showPage('overview',this)">Nutrition</button>
+  <button onclick="showPage('favourites',this)">Favourites</button>
+  <button onclick="showPage('profile',this)">Profile</button>
+ </nav>
+</header>
+
+<main>
+
+<!-- HOME -->
+
+<section id="home" class="page active">
+ <div class="hero">
+  <h1>Eat well. Feel well. 🌱</h1>
+  <p>
+   Your everyday food companion! Plan meals, discover new dishes,
+   record what you eat and explore the nutrition behind your food.
+  </p>
+  <button class="primary" onclick="showPage('planner')">Plan My Meals</button>
+  <button class="secondary" onclick="showPage('diary')">Open Food Diary</button>
+ </div>
+
+ <div class="grid">
+  <div class="card">
+   <h3>🥗 Personalised Meal Planner</h3>
+   <p>Create a meal plan based on your food preferences and favourite cuisines.</p>
+   <button class="secondary" onclick="showPage('planner')">Open planner</button>
+  </div>
+
+  <div class="card">
+   <h3>📝 Smart Food Diary</h3>
+   <p>Record your meals and explore approximate nutrition information.</p>
+   <button class="secondary" onclick="showPage('diary')">Open diary</button>
+  </div>
+
+  <div class="card">
+   <h3>📊 Nutrition Overview</h3>
+   <p>Explore your recorded nutrients and the food groups in your diary.</p>
+   <button class="secondary" onclick="showPage('overview')">View overview</button>
+  </div>
+
+  <div class="card">
+   <h3>⭐ Favourite Meals</h3>
+   <p>Keep your favourite meal ideas in one place.</p>
+   <button class="secondary" onclick="showPage('favourites')">View favourites</button>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Welcome to NutriTrack!</h2>
+  <p>
+   Small everyday food choices can help us explore a wide variety
+   of foods. Use NutriTrack to organise your meals and learn about them.
+  </p>
+  <div class="grid">
+   <div class="stat">Food entries today<strong id="homeEntries">0</strong></div>
+   <div class="stat">Favourite meals<strong id="homeFavourites">0</strong></div>
+   <div class="stat">Glasses recorded today<strong id="homeWater">0</strong></div>
+  </div>
+ </div>
+</section>
+
+
+<!-- PROFILE -->
+
+<section id="profile" class="page">
+ <div class="card">
+  <h2>👤 My Profile</h2>
+
+  <label>Name</label>
+  <input id="pName" placeholder="Your name">
+
+  <label>Age</label>
+  <input id="pAge" type="number" min="1" max="120" placeholder="Your age">
+
+  <label>Food preference</label>
+  <select id="pPref">
+   <option value="any">No preference</option>
+   <option value="vegetarian">Vegetarian</option>
+   <option value="vegan">Vegan</option>
+   <option value="eggetarian">Eggetarian</option>
+  </select>
+
+  <label>Favourite cuisines</label>
+  <input id="pCuisine" placeholder="Indian, Italian, Japanese...">
+
+  <label>Allergies</label>
+  <input id="pAllergy" placeholder="Separate with commas">
+
+  <label>Foods to avoid</label>
+  <input id="pAvoid" placeholder="Separate with commas">
+
+  <br><br>
+  <button class="primary" onclick="saveProfile()">Save Profile</button>
+  <p id="pMessage" class="small"></p>
+ </div>
+
+ <div class="card" id="profileDisplay">
+  <h3>Your Profile</h3>
+  <p class="small">Create a profile to see your details.</p>
+ </div>
+
+ <p class="small">
+  Your profile is saved in this browser. Allergies should always be
+  checked against ingredient labels. NutriTrack cannot guarantee that
+  a meal is allergen-free.
+ </p>
+</section>
+
+
+<!-- MEAL PLANNER -->
+
+<section id="planner" class="page">
+
+ <div class="card">
+  <h2>🍽️ Your Personalised Meal Planner</h2>
+  <p>Choose your preferences to create a 7-day meal plan.</p>
+
+  <div class="grid">
+   <div>
+    <label>Food preference</label>
+    <select id="planPref">
+     <option value="any">Any</option>
+     <option value="vegetarian">Vegetarian</option>
+     <option value="vegan">Vegan</option>
+     <option value="eggetarian">Eggetarian</option>
+    </select>
+   </div>
+
+   <div>
+    <label>Favourite cuisine</label>
+    <select id="planCuisine">
+     <option value="any">All cuisines</option>
+     <option>Indian</option>
+     <option>Italian</option>
+     <option>Japanese</option>
+     <option>Chinese</option>
+     <option>Mexican</option>
+     <option>Mediterranean</option>
+     <option>Korean</option>
+     <option>American</option>
+    </select>
+   </div>
+
+   <div>
+    <label>Allergies</label>
+    <input id="planAllergy" placeholder="e.g. peanuts, milk">
+   </div>
+
+   <div>
+    <label>Foods to avoid</label>
+    <input id="planAvoid" placeholder="e.g. mushrooms">
+   </div>
+
+   <div>
+    <label>Foods you enjoy</label>
+    <input id="planLikes" placeholder="e.g. rice, paneer, pasta">
+   </div>
+  </div>
+
+  <br>
+  <button class="primary" onclick="generatePlan()">Generate My Week</button>
+  <button class="secondary" onclick="useProfile()">Use Profile Preferences</button>
+
+  <p id="planMessage" class="small"></p>
+
+  <p class="small">
+   Suggestions are based on the information entered and the available
+   meal database. Always check ingredients and labels for allergies.
+  </p>
+ </div>
+
+ <div id="weeklyPlan"></div>
+
+ <div class="card">
+  <h2>➕ Add Your Own Meal</h2>
+  <p>Add a meal idea to your personal planner database.</p>
+
+  <label>Meal name</label>
+  <input id="customName" placeholder="e.g. Garlic butter rice">
+
+  <div class="grid">
+   <div>
+    <label>Meal type</label>
+    <select id="customType">
+     <option>Breakfast</option>
+     <option>Lunch</option>
+     <option>Dinner</option>
+     <option>Snack</option>
+    </select>
+   </div>
+
+   <div>
+    <label>Cuisine</label>
+    <select id="customCuisine">
+     <option>Indian</option>
+     <option>Italian</option>
+     <option>Japanese</option>
+     <option>Chinese</option>
+     <option>Mexican</option>
+     <option>Mediterranean</option>
+     <option>Korean</option>
+     <option>American</option>
+     <option>International</option>
+    </select>
+   </div>
+
+   <div>
+    <label>Food preference</label>
+    <select id="customPref">
+     <option value="vegan">Vegan</option>
+     <option value="vegetarian">Vegetarian</option>
+     <option value="eggetarian">Eggetarian</option>
+     <option value="any">Non-vegetarian / Any</option>
+    </select>
+   </div>
+  </div>
+
+  <label>Allergens or ingredients to check</label>
+  <input id="customAllergens" placeholder="e.g. milk, peanuts">
+
+  <br><br>
+  <button class="primary" onclick="addCustomMeal()">Add Meal</button>
+  <p id="customMessage" class="small"></p>
+ </div>
+
+</section>
+
+
+<!-- FOOD DIARY -->
+
+<section id="diary" class="page">
+ <div class="card">
+  <h2>📝 Smart Food Diary</h2>
+  <p>
+   Enter a food or dish to look up approximate nutrition information.
+  </p>
+
+  <label>What did you eat?</label>
+  <input id="foodName" placeholder="e.g. chicken biryani, paneer tikka, apple">
+
+  <div class="grid">
+   <div>
+    <label>Meal type</label>
+    <select id="foodMeal">
+     <option>Breakfast</option>
+     <option>Lunch</option>
+     <option>Dinner</option>
+     <option>Snack</option>
+    </select>
+   </div>
+
+   <div>
+    <label>Portion size in grams</label>
+    <input id="foodGrams" type="number" min="1" max="5000" value="100">
+   </div>
+  </div>
+
+  <br>
+  <button class="primary" id="lookupButton" onclick="recogniseFood()">
+   Identify Food & Nutrition
+  </button>
+
+  <div id="lookupResult"></div>
+
+  <div id="nutritionPreview" style="display:none">
+   <h3>Nutrition estimate for your portion</h3>
+   <div class="grid" id="previewStats"></div>
+   <p class="small" id="previewSource"></p>
+
+   <button class="primary" onclick="confirmFood()">Add to Food Diary</button>
+   <button class="secondary" onclick="resetLookup()">Try Another Food</button>
+  </div>
+
+  <p class="small">
+   Nutrition estimates depend on ingredients, recipes and preparation.
+   Homemade dishes can vary considerably.
+  </p>
+ </div>
+
+ <div class="card">
+  <div class="section-title">
+   <h2>Today's Food Entries</h2>
+   <span class="pill" id="entryCount">0 entries</span>
+  </div>
+  <div id="diaryEntries"><p class="small">No foods added yet.</p></div>
+ </div>
+
+ <div class="card">
+  <h2>🍽️ Nutrition by Meal</h2>
+  <p class="small">Approximate nutrition totals for each meal you recorded.</p>
+  <div id="mealBreakdown"></div>
+ </div>
+
+ <div class="card">
+  <h2>📊 Daily Nutrition Estimates</h2>
+  <div class="grid" id="diaryTotals"></div>
+  <p class="small">
+   These are approximate totals for recorded foods, not personal
+   nutrition targets.
+  </p>
+ </div>
+
+ <div class="card">
+  <h2>💧 Water Tracker</h2>
+  <p>Record your glasses of water.</p>
+
+  <div class="stat">
+   Glasses recorded
+   <strong id="waterCount">0</strong>
+  </div>
+
+  <br>
+  <button class="primary" onclick="changeWater(1)">+ Add a glass</button>
+  <button class="secondary" onclick="changeWater(-1)">Remove one</button>
+ </div>
+</section>
+
+
+<!-- NUTRITION OVERVIEW -->
+
+<section id="overview" class="page">
+ <div class="card">
+  <h2>📊 Nutrition Overview</h2>
+  <p>Your approximate nutrition summary based on today's food entries.</p>
+
+  <div class="grid" id="overviewStats"></div>
+
+  <p class="small">
+   This page does not set personal nutrition targets or judge whether
+   you have eaten enough. Nutrition needs differ from person to person.
+  </p>
+ </div>
+
+ <div class="card">
+  <h2>🥦 Food Groups Covered</h2>
+  <p>Food groups represented in your diary:</p>
+  <ul id="foodGroups">
+   <li>No food groups recorded yet.</li>
+  </ul>
+ </div>
+
+ <div class="card">
+  <h2>🌈 Food Variety</h2>
+  <p id="varietyText">Add foods to your diary to see your food variety.</p>
+  <div id="varietyInsights"></div>
+ </div>
+
+ <div class="card">
+  <h2>💡 Food Diary Insights</h2>
+  <div id="foodInsights">
+   <p class="small">Add food entries to see your insights.</p>
+  </div>
+ </div>
+</section>
+
+
+<!-- FAVOURITES -->
+
+<section id="favourites" class="page">
+ <div class="card">
+  <h2>⭐ My Favourite Meals</h2>
+  <p>Save meal ideas from your planner and find them here.</p>
+  <div id="favouriteList">
+   <div class="empty">You haven't saved any favourite meals yet.</div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>💚 Your Custom Meals</h2>
+  <p>Meals that you added yourself.</p>
+  <div id="customMealList">
+   <div class="empty">You haven't added any custom meals yet.</div>
+  </div>
+ </div>
+</section>
+
+</main>
+
+<footer>
+ NutriTrack • Making everyday food choices easier 🌿
+</footer>
+
+
+<script>
+/* STORAGE */
+
+const KEY={
+ profile:"nutritrack_profile_updated",
+ diary:"nutritrack_diary_updated",
+ water:"nutritrack_water_updated",
+ favourites:"nutritrack_favourites_updated",
+ custom:"nutritrack_custom_updated"
+};
+
+const $=id=>document.getElementById(id);
+
+function get(key,fallback){
+ try{
+  return JSON.parse(localStorage.getItem(key))??fallback;
+ }catch(e){
+  return fallback;
+ }
+}
+
+function put(key,value){
+ localStorage.setItem(key,JSON.stringify(value));
+}
+
+function escapeHTML(s){
+ return String(s??"").replace(/[&<>"']/g,c=>({
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
+ }[c]));
+}
+
+function showPage(id,btn){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ $(id).classList.add("active");
+
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+
+ if(btn)btn.classList.add("active");
+
+ if(id==="diary")renderDiary();
+ if(id==="overview")renderOverview();
+ if(id==="profile")renderProfile();
+ if(id==="favourites")renderFavourites();
+ if(id==="home")renderHome();
+}
+
+function today(){
+ const d=new Date();
+ return d.getFullYear()+"-"+
+  String(d.getMonth()+1).padStart(2,"0")+"-"+
+  String(d.getDate()).padStart(2,"0");
+}
+
+function allDiary(){
+ const d=get(KEY.diary,{});
+ if(!d[today()])d[today()]=[];
+ return d;
+}
+
+function entries(){
+ return allDiary()[today()]||[];
+}
+
+
+/* PROFILE */
+
+function saveProfile(){
+ const p={
+  name:$("pName").value.trim(),
+  age:$("pAge").value,
+  pref:$("pPref").value,
+  cuisine:$("pCuisine").value,
+  allergy:$("pAllergy").value,
+  avoid:$("pAvoid").value
+ };
+
+ if(!p.name||!p.age){
+  $("pMessage").textContent="Please enter your name and age.";
+  return;
+ }
+
+ put(KEY.profile,p);
+ $("pMessage").textContent="Profile saved successfully!";
+ renderProfile();
+ renderHome();
+}
+
+function renderProfile(){
+ const p=get(KEY.profile,null);
+ if(!p)return;
+
+ $("pName").value=p.name||"";
+ $("pAge").value=p.age||"";
+ $("pPref").value=p.pref||"any";
+ $("pCuisine").value=p.cuisine||"";
+ $("pAllergy").value=p.allergy||"";
+ $("pAvoid").value=p.avoid||"";
+
+ $("profileDisplay").innerHTML=
+  "<h3>Hello, "+escapeHTML(p.name)+"! 👋</h3>"+
+  "<p><b>Age:</b> "+escapeHTML(p.age)+"</p>"+
+  "<p><b>Food preference:</b> "+escapeHTML(p.pref)+"</p>"+
+  "<p><b>Favourite cuisines:</b> "+escapeHTML(p.cuisine||"Not entered")+"</p>"+
+  "<p><b>Allergies:</b> "+escapeHTML(p.allergy||"Not entered")+"</p>"+
+  "<p><b>Foods to avoid:</b> "+escapeHTML(p.avoid||"Not entered")+"</p>";
+}
+
+function useProfile(){
+ const p=get(KEY.profile,null);
+
+ if(!p){
+  $("planMessage").textContent="Create a profile first.";
+  return;
+ }
+
+ $("planPref").value=p.pref||"any";
+ $("planAllergy").value=p.allergy||"";
+ $("planAvoid").value=p.avoid||"";
+ $("planMessage").textContent="Profile preferences loaded.";
+}
+
+
+/* FOOD DATABASE */
+
+const foodDB=[
+ {name:"apple",group:"Fruits",p:.3,f:2.4,c:14,t:.2,aliases:["apples"]},
+ {name:"banana",group:"Fruits",p:1.1,f:2.6,c:23,t:.3,aliases:["bananas"]},
+ {name:"orange",group:"Fruits",p:.9,f:2.4,c:12,t:.1,aliases:[]},
+ {name:"mango",group:"Fruits",p:.8,f:1.6,c:15,t:.4,aliases:[]},
+ {name:"papaya",group:"Fruits",p:.5,f:1.7,c:11,t:.3,aliases:[]},
+ {name:"watermelon",group:"Fruits",p:.6,f:.4,c:8,t:.2,aliases:[]},
+ {name:"guava",group:"Fruits",p:2.6,f:5.4,c:14,t:1,aliases:[]},
+ {name:"rice",group:"Grains",p:2.7,f:.4,c:28,t:.3,aliases:["white rice","cooked rice"]},
+ {name:"brown rice",group:"Grains",p:2.6,f:1.8,c:23,t:.9,aliases:[]},
+ {name:"roti",group:"Grains",p:3.5,f:2.5,c:18,t:1.2,aliases:["chapati","phulka"]},
+ {name:"bread",group:"Grains",p:4,f:2.5,c:18,t:1.2,aliases:["whole wheat bread"]},
+ {name:"oats",group:"Grains",p:2.5,f:2.7,c:17,t:1.5,aliases:[]},
+ {name:"pasta",group:"Grains",p:5,f:1.8,c:30,t:1,aliases:[]},
+ {name:"poha",group:"Grains",p:2.5,f:1.5,c:25,t:1,aliases:[]},
+ {name:"idli",group:"Grains",p:2,f:.8,c:12,t:.2,aliases:[]},
+ {name:"dosa",group:"Grains",p:3,f:1,c:18,t:3,aliases:[]},
+ {name:"upma",group:"Grains",p:3,f:1.5,c:20,t:4,aliases:[]},
+ {name:"quinoa",group:"Grains",p:4.4,f:2.8,c:21,t:1.9,aliases:[]},
+ {name:"dal",group:"Pulses",p:7,f:5,c:19,t:.4,aliases:["lentil dal","moong dal","masoor dal","toor dal"]},
+ {name:"chickpeas",group:"Pulses",p:8.9,f:7.6,c:27,t:2.6,aliases:["chana"]},
+ {name:"rajma",group:"Pulses",p:8.7,f:6.4,c:23,t:.5,aliases:["kidney beans"]},
+ {name:"chole",group:"Pulses",p:8.9,f:7.6,c:27,t:2.6,aliases:["chana masala"]},
+ {name:"paneer",group:"Dairy",p:18,f:0,c:3.5,t:20,aliases:["cottage cheese"]},
+ {name:"milk",group:"Dairy",p:3.3,f:0,c:5,t:3.3,aliases:[]},
+ {name:"curd",group:"Dairy",p:3.5,f:0,c:4.7,t:3.3,aliases:["yogurt","yoghurt"]},
+ {name:"cheese",group:"Dairy",p:22,f:0,c:1.3,t:25,aliases:[]},
+ {name:"egg",group:"Protein foods",p:13,f:0,c:1.1,t:11,aliases:["boiled egg","eggs"]},
+ {name:"chicken",group:"Protein foods",p:27,f:0,c:0,t:4,aliases:["chicken breast","cooked chicken"]},
+ {name:"fish",group:"Protein foods",p:22,f:0,c:0,t:5,aliases:[]},
+ {name:"salmon",group:"Protein foods",p:25,f:0,c:0,t:13,aliases:[]},
+ {name:"tofu",group:"Plant protein",p:8,f:.3,c:2,t:4.8,aliases:[]},
+ {name:"soy chunks",group:"Plant protein",p:16,f:4,c:9,t:1,aliases:[]},
+ {name:"peanuts",group:"Nuts and seeds",p:25.8,f:8.5,c:16,t:49,aliases:["groundnuts"]},
+ {name:"almonds",group:"Nuts and seeds",p:21,f:12.5,c:22,t:49,aliases:[]},
+ {name:"cashews",group:"Nuts and seeds",p:18,f:3.3,c:30,t:44,aliases:[]},
+ {name:"spinach",group:"Vegetables",p:2.9,f:2.2,c:3.6,t:.4,aliases:[]},
+ {name:"broccoli",group:"Vegetables",p:2.8,f:2.6,c:7,t:.4,aliases:[]},
+ {name:"carrot",group:"Vegetables",p:.9,f:2.8,c:10,t:.2,aliases:["carrots"]},
+ {name:"potato",group:"Vegetables",p:2,f:2,c:17,t:.1,aliases:[]},
+ {name:"tomato",group:"Vegetables",p:.9,f:1.2,c:3.9,t:.2,aliases:[]},
+ {name:"cucumber",group:"Vegetables",p:.7,f:.5,c:3.6,t:.1,aliases:[]},
+ {name:"sweet potato",group:"Vegetables",p:1.6,f:3,c:20,t:.1,aliases:[]},
+ {name:"avocado",group:"Fruits",p:2,f:6.7,c:9,t:15,aliases:[]},
+ {name:"hummus",group:"Pulses",p:8,f:6,c:14,t:10,aliases:[]},
+ {name:"peanut butter",group:"Nuts and seeds",p:25,f:6,c:20,t:50,aliases:[]},
+ {name:"biryani",group:"Mixed dish",p:7,f:1.5,c:25,t:8,aliases:["chicken biryani","vegetable biryani","veg biryani"]},
+ {name:"pulao",group:"Mixed dish",p:4,f:1.5,c:25,t:5,aliases:["veg pulao","vegetable pulao"]},
+ {name:"khichdi",group:"Mixed dish",p:4,f:2,c:20,t:3,aliases:["khichri"]},
+ {name:"sambar",group:"Pulses",p:3.5,f:2,c:8,t:2,aliases:[]},
+ {name:"paneer tikka",group:"Dairy",p:15,f:.5,c:5,t:12,aliases:[]},
+ {name:"palak paneer",group:"Mixed dish",p:8,f:2,c:6,t:10,aliases:[]},
+ {name:"pav bhaji",group:"Mixed dish",p:4,f:3,c:18,t:8,aliases:[]},
+ {name:"samosa",group:"Mixed dish",p:5,f:2,c:30,t:15,aliases:[]},
+ {name:"idli sambar",group:"Mixed dish",p:3,f:1.5,c:15,t:1,aliases:[]},
+ {name:"masala dosa",group:"Mixed dish",p:4,f:1.5,c:25,t:7,aliases:[]},
+ {name:"fried rice",group:"Mixed dish",p:5,f:1.5,c:28,t:7,aliases:["vegetable fried rice","veg fried rice"]},
+ {name:"noodles",group:"Grains",p:5,f:1.5,c:25,t:5,aliases:["hakka noodles"]},
+ {name:"pizza",group:"Mixed dish",p:11,f:2.5,c:33,t:10,aliases:[]},
+ {name:"burger",group:"Mixed dish",p:12,f:2,c:30,t:12,aliases:[]},
+ {name:"sandwich",group:"Mixed dish",p:8,f:2,c:25,t:7,aliases:[]},
+ {name:"vegetable soup",group:"Vegetables",p:2,f:1.5,c:6,t:1,aliases:[]},
+ {name:"chicken curry",group:"Mixed dish",p:12,f:1,c:5,t:10,aliases:[]},
+ {name:"fish curry",group:"Mixed dish",p:10,f:1,c:5,t:8,aliases:[]},
+ {name:"chicken tikka",group:"Protein foods",p:20,f:0,c:3,t:6,aliases:[]},
+ {name:"rajma chawal",group:"Mixed dish",p:5,f:3,c:25,t:3,aliases:[]}
+];
+
+function cleanText(s){
+ return s.toLowerCase()
+  .replace(/[^\p{L}\p{N}\s]/gu," ")
+  .replace(/\s+/g," ").trim();
+}
+
+function findLocalFood(query){
+ const q=cleanText(query);
+ return foodDB.find(f=>
+  cleanText(f.name)===q||
+  f.aliases.some(a=>cleanText(a)===q)
+ );
+}
+
+function groupFromText(text,categories){
+ const s=(text+" "+(categories||"")).toLowerCase();
+
+ if(/fruit|apple|banana|mango|orange|berry|grape|avocado/.test(s))return "Fruits";
+ if(/vegetable|spinach|carrot|broccoli|potato|tomato|cucumber/.test(s))return "Vegetables";
+ if(/grain|cereal|rice|bread|pasta|wheat|oat|noodle/.test(s))return "Grains";
+ if(/pulse|lentil|bean|chickpea|pea|dal/.test(s))return "Pulses";
+ if(/dairy|milk|cheese|yogurt|yoghurt|paneer/.test(s))return "Dairy";
+ if(/nut|seed|almond|peanut|cashew|walnut/.test(s))return "Nuts and seeds";
+ if(/egg|chicken|fish|meat|seafood/.test(s))return "Protein foods";
+ if(/soy|tofu/.test(s))return "Plant protein";
+ return "Mixed dish";
+}
+
+let pendingFood=null;
+
+function showLookup(message,type){
+ $("lookupResult").className="notice "+(type||"");
+ $("lookupResult").textContent=message;
+}
+
+function resetLookup(){
+ pendingFood=null;
+ $("foodName").value="";
+ $("foodGrams").value=100;
+ $("lookupResult").textContent="";
+ $("lookupResult").className="";
+ $("nutritionPreview").style.display="none";
+ $("foodName").focus();
+}
+
+function previewFood(food,grams,source){
+ const factor=grams/100;
+
+ pendingFood={
+  name:food.name,
+  group:food.group,
+  grams,
+  meal:$("foodMeal").value,
+  protein:food.p*factor,
+  fibre:food.f*factor,
+  carbs:food.c*factor,
+  fat:food.t*factor,
+  source
+ };
+
+ $("previewStats").innerHTML=
+  stat("Protein",pendingFood.protein,"g")+
+  stat("Fibre",pendingFood.fibre,"g")+
+  stat("Carbohydrates",pendingFood.carbs,"g")+
+  stat("Fat",pendingFood.fat,"g");
+
+ $("previewSource").textContent=
+  "Food group: "+food.group+". Estimate based on "+source+". Values are approximate.";
+
+ $("nutritionPreview").style.display="block";
+
+ showLookup(
+  "Food recognised: "+food.name+". Check the result before adding it.",
+  "success"
+ );
+}
+
+async function recogniseFood(){
+ const query=$("foodName").value.trim();
+ const grams=Number($("foodGrams").value);
+
+ if(query.length<2){
+  showLookup("Please enter a food name.","error");
+  return;
+ }
+
+ if(!Number.isFinite(grams)||grams<=0||grams>5000){
+  showLookup("Please enter a valid portion size in grams.","error");
+  return;
+ }
+
+ pendingFood=null;
+ $("nutritionPreview").style.display="none";
+
+ const button=$("lookupButton");
+ button.disabled=true;
+ button.textContent="Identifying food...";
+
+ showLookup("Checking the food database...");
+
+ try{
+  const local=findLocalFood(query);
+
+  if(local){
+   previewFood(local,grams,"NutriTrack's built-in food estimates");
+   return;
+  }
+
+  const url="https://world.openfoodfacts.org/cgi/search.pl?search_terms="+
+   encodeURIComponent(query)+
+   "&search_simple=1&action=process&json=1&page_size=20&fields=product_name,product_name_en,nutriments,categories";
+
+  const response=await fetch(url);
+
+  if(!response.ok)throw new Error("Database unavailable");
+
+  const data=await response.json();
+  const products=data.products||[];
+  const qTokens=cleanText(query).split(" ").filter(x=>x.length>2);
+
+  const candidates=products.map(product=>{
+   const name=product.product_name_en||product.product_name||"";
+   const nameClean=cleanText(name);
+   const matches=qTokens.filter(t=>nameClean.includes(t)).length;
+   const score=qTokens.length?matches/qTokens.length:0;
+   const n=product.nutriments||{};
+
+   const values={
+    proteins:Number(n.proteins_100g),
+    fiber:Number(n.fiber_100g??n.fibers_100g),
+    carbs:Number(n.carbohydrates_100g),
+    fat:Number(n.fat_100g)
+   };
+
+   const valid=Object.values(values).some(v=>
+    Number.isFinite(v)&&v>=0&&v<=100
+   );
+
+   return{product,name,score,values,valid};
+  })
+  .filter(x=>x.name&&x.score>=0.5&&x.valid)
+  .sort((a,b)=>b.score-a.score);
+
+  const best=candidates[0];
+
+  if(!best){
+   showLookup(
+    "Sorry, NutriTrack couldn't confidently identify this food or find reliable nutrition information. Try another name. It hasn't been added.",
+    "error"
+   );
+   return;
+  }
+
+  const n=best.values;
+
+  const food={
+   name:best.name,
+   group:groupFromText(best.name,best.product.categories),
+   p:Number.isFinite(n.proteins)?n.proteins:0,
+   f:Number.isFinite(n.fiber)?n.fiber:0,
+   c:Number.isFinite(n.carbs)?n.carbs:0,
+   t:Number.isFinite(n.fat)?n.fat:0
+  };
+
+  previewFood(food,grams,"Open Food Facts product information");
+
+ }catch(error){
+  showLookup(
+   "Could not identify this food online. Check your internet connection. If the food is not in the built-in database, NutriTrack won't guess its nutrition.",
+   "error"
+  );
+ }finally{
+  button.disabled=false;
+  button.textContent="Identify Food & Nutrition";
+ }
+}
+
+function confirmFood(){
+ if(!pendingFood)return;
+
+ const all=allDiary();
+
+ all[today()].push({
+  id:Date.now()+Math.random(),
+  ...pendingFood
+ });
+
+ put(KEY.diary,all);
+
+ $("lookupResult").textContent="Food successfully added to your diary!";
+ $("lookupResult").className="notice success";
+ $("nutritionPreview").style.display="none";
+ $("foodName").value="";
+ $("foodGrams").value=100;
+
+ pendingFood=null;
+
+ renderDiary();
+ renderHome();
+}
+
+
+/* DIARY AND NUTRITION */
+
+function sum(key){
+ return entries().reduce((total,f)=>total+(Number(f[key])||0),0);
+}
+
+function stat(name,value,unit){
+ return "<div class='stat'>"+escapeHTML(name)+
+  "<strong>"+Number(value).toFixed(1)+" "+escapeHTML(unit)+"</strong></div>";
+}
+
+function renderDiary(){
+ const list=entries();
+
+ $("entryCount").textContent=list.length+" entries";
+
+ if(!list.length){
+  $("diaryEntries").innerHTML="<p class='small'>No foods added yet.</p>";
+ }else{
+  $("diaryEntries").innerHTML="";
+
+  list.forEach(f=>{
+   const row=document.createElement("div");
+   row.className="food-row";
+
+   const info=document.createElement("div");
+   info.innerHTML="<b>"+escapeHTML(f.name)+"</b><br>"+
+    "<span class='small'>"+escapeHTML(f.meal)+
+    " • "+escapeHTML(f.grams)+" g • "+escapeHTML(f.group)+"</span>";
+
+   const del=document.createElement("button");
+   del.className="danger";
+   del.textContent="Remove";
+   del.onclick=()=>removeFood(f.id);
+
+   row.append(info,del);
+   $("diaryEntries").appendChild(row);
+  });
+ }
+
+ $("diaryTotals").innerHTML=
+  stat("Protein",sum("protein"),"g")+
+  stat("Fibre",sum("fibre"),"g")+
+  stat("Carbohydrates",sum("carbs"),"g")+
+  stat("Fat",sum("fat"),"g");
+
+ $("waterCount").textContent=get(KEY.water,{})[today()]||0;
+
+ renderMealBreakdown();
+}
+
+function renderMealBreakdown(){
+ const types=["Breakfast","Lunch","Dinner","Snack"];
+ const list=entries();
+
+ $("mealBreakdown").innerHTML="";
+
+ types.forEach(type=>{
+  const foods=list.filter(f=>f.meal===type);
+
+  const p=foods.reduce((s,f)=>s+(f.protein||0),0);
+  const fibre=foods.reduce((s,f)=>s+(f.fibre||0),0);
+  const carbs=foods.reduce((s,f)=>s+(f.carbs||0),0);
+  const fat=foods.reduce((s,f)=>s+(f.fat||0),0);
+
+  const box=document.createElement("div");
+  box.className="meal";
+
+  box.innerHTML="<h3>"+type+"</h3>"+
+   (foods.length?
+    "<p>"+foods.map(f=>escapeHTML(f.name)).join(", ")+"</p>"+
+    "<div class='grid'>"+
+    "<div>Protein: <b>"+p.toFixed(1)+" g</b></div>"+
+    "<div>Fibre: <b>"+fibre.toFixed(1)+" g</b></div>"+
+    "<div>Carbs: <b>"+carbs.toFixed(1)+" g</b></div>"+
+    "<div>Fat: <b>"+fat.toFixed(1)+" g</b></div>"+
+    "</div>":
+    "<p class='small'>No entries recorded for this meal.</p>"
+   );
+
+  $("mealBreakdown").appendChild(box);
+ });
+}
+
+function removeFood(id){
+ const all=allDiary();
+ all[today()]=all[today()].filter(f=>String(f.id)!==String(id));
+ put(KEY.diary,all);
+
+ renderDiary();
+ renderOverview();
+ renderHome();
+}
+
+function changeWater(n){
+ const w=get(KEY.water,{});
+ w[today()]=Math.max(0,(w[today()]||0)+n);
+
+ put(KEY.water,w);
+
+ $("waterCount").textContent=w[today()];
+ renderHome();
+}
+
+
+/* NUTRITION OVERVIEW */
+
+function renderOverview(){
+ $("overviewStats").innerHTML=
+  stat("Protein",sum("protein"),"g")+
+  stat("Fibre",sum("fibre"),"g")+
+  stat("Carbohydrates",sum("carbs"),"g")+
+  stat("Fat",sum("fat"),"g");
+
+ const groups=[...new Set(entries().map(f=>f.group))];
+
+ $("foodGroups").innerHTML=groups.length?
+  groups.map(g=>"<li>"+escapeHTML(g)+"</li>").join("") :
+  "<li>No food groups recorded yet.</li>";
+
+ $("varietyText").textContent=entries().length?
+  "You recorded "+entries().length+
+  " food entries from "+groups.length+
+  " food groups today. Enjoy a variety of foods over time.":
+  "Add foods to your diary to see your food variety.";
+
+ $("varietyInsights").innerHTML=groups.length?
+  groups.map(g=>"<span class='pill'>"+escapeHTML(g)+"</span>").join(""):
+  "";
+
+ const insights=[];
+
+ if(entries().length){
+  insights.push("You have recorded "+entries().length+" food entries today.");
+  insights.push("Your diary includes "+groups.length+" different food groups.");
+
+  if(groups.includes("Fruits"))
+   insights.push("Your diary includes fruit entries.");
+
+  if(groups.includes("Vegetables"))
+   insights.push("Your diary includes vegetable entries.");
+
+  if(groups.includes("Pulses")||groups.includes("Plant protein"))
+   insights.push("Your diary includes plant-based protein food entries.");
+
+  if(groups.includes("Dairy"))
+   insights.push("Your diary includes dairy entries.");
+ }else{
+  insights.push("Add foods to your diary to see your insights.");
+ }
+
+ $("foodInsights").innerHTML=insights.map(x=>
+  "<div class='notice'>"+escapeHTML(x)+"</div>"
+ ).join("");
+}
+
+
+/* MEAL DATABASE */
+
+const baseMeals=[
+["Vegetable poha with peanuts","Indian","Breakfast","vegetarian","peanuts"],
+["Idli with sambar","Indian","Breakfast","vegan",""],
+["Masala dosa","Indian","Breakfast","vegan",""],
+["Paneer paratha with curd","Indian","Breakfast","vegetarian","milk"],
+["Besan chilla","Indian","Breakfast","vegan",""],
+["Vegetable upma","Indian","Breakfast","vegan",""],
+["Moong dal cheela","Indian","Breakfast","vegan",""],
+["Ragi porridge with banana","Indian","Breakfast","vegetarian","milk"],
+["Overnight oats with fruit","American","Breakfast","vegetarian","milk"],
+["Greek yogurt and berry bowl","Mediterranean","Breakfast","vegetarian","milk"],
+["Avocado toast","American","Breakfast","vegan",""],
+["Scrambled eggs on toast","American","Breakfast","eggetarian","eggs"],
+["Vegetable omelette","American","Breakfast","eggetarian","eggs"],
+["Vegetable pulao with raita","Indian","Lunch","vegetarian","milk"],
+["Rajma chawal","Indian","Lunch","vegan",""],
+["Chole with roti","Indian","Lunch","vegan",""],
+["Dal tadka with rice","Indian","Lunch","vegan",""],
+["Palak paneer with roti","Indian","Lunch","vegetarian","milk"],
+["Vegetable khichdi","Indian","Lunch","vegan",""],
+["Chickpea salad bowl","Mediterranean","Lunch","vegan",""],
+["Falafel pita with hummus","Mediterranean","Lunch","vegan","sesame"],
+["Vegetable burrito bowl","Mexican","Lunch","vegan",""],
+["Tomato basil pasta","Italian","Lunch","vegan",""],
+["Spinach and ricotta pasta","Italian","Lunch","vegetarian","milk"],
+["Teriyaki tofu rice bowl","Japanese","Lunch","vegan","soy"],
+["Vegetable fried rice","Chinese","Lunch","vegan","soy"],
+["Grilled chicken rice bowl","American","Lunch","any",""],
+["Mushroom risotto","Italian","Dinner","vegetarian","milk"],
+["Vegetable lasagna","Italian","Dinner","vegetarian","milk"],
+["Whole wheat vegetable pizza","Italian","Dinner","vegetarian","milk"],
+["Chickpea and spinach curry","Indian","Dinner","vegan",""],
+["Vegetable biryani with raita","Indian","Dinner","vegetarian","milk"],
+["Tofu vegetable stir-fry","Chinese","Dinner","vegan","soy"],
+["Vegetable hakka noodles","Chinese","Dinner","vegan","soy"],
+["Grilled salmon with rice","Japanese","Dinner","any","fish"],
+["Korean tofu stew with rice","Korean","Dinner","vegan","soy"],
+["Black bean quesadilla","Mexican","Dinner","vegetarian","milk"],
+["Stuffed bell peppers with rice","Mediterranean","Dinner","vegan",""],
+["Lentil shepherd's pie","American","Dinner","vegan",""],
+["Chicken fajita bowl","Mexican","Dinner","any",""],
+["Vegetable couscous bowl","Mediterranean","Dinner","vegan",""],
+["Fruit bowl with yogurt","International","Snack","vegetarian","milk"],
+["Roasted chickpeas","International","Snack","vegan",""],
+["Hummus with carrot sticks","Mediterranean","Snack","vegan","sesame"],
+["Apple slices with peanut butter","American","Snack","vegan","peanuts"],
+["Roasted makhana","Indian","Snack","vegan",""],
+["Corn chaat","Indian","Snack","vegan",""],
+["Sprout salad","Indian","Snack","vegan",""],
+["Banana smoothie","International","Snack","vegetarian","milk"],
+["Edamame with lemon","Japanese","Snack","vegan","soy"],
+["Sweet potato wedges","American","Snack","vegan",""]
+].map(m=>({
+ name:m[0],cuisine:m[1],type:m[2],pref:m[3],
+ allergens:m[4],custom:false
+}));
+
+function getMeals(){
+ return baseMeals.concat(get(KEY.custom,[]));
+}
+
+function splitWords(s){
+ return(s||"").toLowerCase().split(",").map(x=>x.trim()).filter(Boolean);
+}
+
+function shuffle(arr){
+ const a=[...arr];
+ for(let i=a.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+
+function allowed(m,pref,allergy,avoid){
+ if(pref==="vegan"&&m.pref!=="vegan")return false;
+
+ if(pref==="vegetarian"&&!["vegan","vegetarian"].includes(m.pref))
+  return false;
+
+ if(pref==="eggetarian"&&!["vegan","vegetarian","eggetarian"].includes(m.pref))
+  return false;
+
+ const text=(m.name+" "+m.allergens).toLowerCase();
+
+ if(allergy.some(x=>text.includes(x)))return false;
+ if(avoid.some(x=>text.includes(x)))return false;
+
+ return true;
+}
+
+let currentPlan=[];
+
+function generatePlan(){
+ const pref=$("planPref").value;
+ const cuisine=$("planCuisine").value;
+ const allergy=splitWords($("planAllergy").value);
+ const avoid=splitWords($("planAvoid").value);
+ const likes=splitWords($("planLikes").value);
+
+ const types=["Breakfast","Lunch","Dinner","Snack"];
+ const days=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+ const database=getMeals();
+
+ currentPlan=types.map(type=>{
+  const pool=database.filter(m=>
+   m.type===type&&allowed(m,pref,allergy,avoid)
+  );
+
+  const exact=pool.filter(m=>
+   cuisine==="any"||m.cuisine===cuisine
+  );
+
+  let result=shuffle(exact);
+
+  if(result.length<7){
+   result=result.concat(
+    shuffle(pool.filter(m=>!result.includes(m)))
+   );
+  }
+
+  // Put meals matching the user's likes first.
+  if(likes.length){
+   const liked=result.filter(m=>
+    likes.some(word=>m.name.toLowerCase().includes(word))
+   );
+   const other=result.filter(m=>!liked.includes(m));
+   result=liked.concat(other);
+  }
+
+  return{type,items:result.slice(0,7)};
+ });
+
+ renderPlan(days);
+
+ $("planMessage").textContent=
+  "Your meal plan is ready! Your filters and food preferences have been applied where possible.";
+}
+
+function renderPlan(days){
+ $("weeklyPlan").innerHTML="";
+
+ days.forEach((day,index)=>{
+  const box=document.createElement("div");
+  box.className="day";
+
+  let html="<h3>"+day+"</h3>";
+
+  currentPlan.forEach((g,gi)=>{
+   const m=g.items[index];
+
+   html+="<div class='meal'><b>"+g.type+":</b> "+
+    (m?
+     escapeHTML(m.name)+" <span class='pill'>"+escapeHTML(m.cuisine)+"</span>"+
+     (m.custom?" <span class='pill'>Your meal</span>":"")+
+     "<br><button class='secondary' onclick='replaceMeal("+gi+","+index+")'>Replace</button>"+
+     " <button class='secondary' onclick='saveFavourite("+JSON.stringify(m.name).replace(/'/g,"&#39;")+")'>☆ Save favourite</button>"
+     :
+     "No suggestion available for these filters."
+    )+
+    "</div>";
+  });
+
+  box.innerHTML=html;
+  $("weeklyPlan").appendChild(box);
+ });
+}
+
+function replaceMeal(gi,di){
+ const g=currentPlan[gi];
+ const pref=$("planPref").value;
+ const cuisine=$("planCuisine").value;
+ const allergy=splitWords($("planAllergy").value);
+ const avoid=splitWords($("planAvoid").value);
+
+ const used=g.items.filter(Boolean).map(m=>m.name);
+
+ let pool=getMeals().filter(m=>
+  m.type===g.type&&
+  allowed(m,pref,allergy,avoid)&&
+  !used.includes(m.name)
+ );
+
+ if(cuisine!=="any"){
+  const exact=pool.filter(m=>m.cuisine===cuisine);
+  if(exact.length)pool=exact;
+ }
+
+ if(!pool.length){
+  $("planMessage").textContent=
+   "No unused suggestions remain for this slot. Try another cuisine or broader preferences.";
+  return;
+ }
+
+ g.items[di]=shuffle(pool)[0];
+
+ renderPlan(["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]);
+}
+
+
+/* CUSTOM MEALS */
+
+function addCustomMeal(){
+ const name=$("customName").value.trim();
+
+ if(name.length<2){
+  $("customMessage").textContent="Please enter a meal name.";
+  return;
+ }
+
+ const custom=get(KEY.custom,[]);
+
+ if(custom.some(m=>m.name.toLowerCase()===name.toLowerCase())||
+    baseMeals.some(m=>m.name.toLowerCase()===name.toLowerCase())){
+  $("customMessage").textContent="This meal is already in your planner.";
+  return;
+ }
+
+ custom.push({
+  name,
+  type:$("customType").value,
+  cuisine:$("customCuisine").value,
+  pref:$("customPref").value,
+  allergens:$("customAllergens").value,
+  custom:true
+ });
+
+ put(KEY.custom,custom);
+
+ $("customName").value="";
+ $("customAllergens").value="";
+ $("customMessage").textContent="Your meal has been added! Generate your week to see it.";
+
+ renderFavourites();
+}
+
+function removeCustom(name){
+ const custom=get(KEY.custom,[]).filter(m=>m.name!==name);
+ put(KEY.custom,custom);
+ renderFavourites();
+}
+
+
+/* FAVOURITES */
+
+function saveFavourite(name){
+ const favourites=get(KEY.favourites,[]);
+
+ if(favourites.some(f=>f.toLowerCase()===name.toLowerCase())){
+  alert("This meal is already in your favourites!");
+  return;
+ }
+
+ favourites.push(name);
+ put(KEY.favourites,favourites);
+
+ renderFavourites();
+ renderHome();
+
+ alert("Added to your favourites!");
+}
+
+function removeFavourite(name){
+ const favourites=get(KEY.favourites,[]).filter(f=>f!==name);
+ put(KEY.favourites,favourites);
+ renderFavourites();
+ renderHome();
+}
+
+function renderFavourites(){
+ const favourites=get(KEY.favourites,[]);
+ const custom=get(KEY.custom,[]);
+
+ if(!favourites.length){
+  $("favouriteList").innerHTML=
+   "<div class='empty'>You haven't saved any favourite meals yet.</div>";
+ }else{
+  $("favouriteList").innerHTML=favourites.map(name=>
+   "<div class='food-row'><b>⭐ "+escapeHTML(name)+"</b>"+
+   "<button class='danger' onclick='removeFavourite("+JSON.stringify(name).replace(/'/g,"&#39;")+")'>Remove</button></div>"
+  ).join("");
+ }
+
+ if(!custom.length){
+  $("customMealList").innerHTML=
+   "<div class='empty'>You haven't added any custom meals yet.</div>";
+ }else{
+  $("customMealList").innerHTML=custom.map(m=>
+   "<div class='food-row'><div><b>"+escapeHTML(m.name)+"</b>"+
+   "<br><span class='small'>"+escapeHTML(m.type)+" • "+escapeHTML(m.cuisine)+"</span></div>"+
+   "<button class='danger' onclick='removeCustom("+JSON.stringify(m.name).replace(/'/g,"&#39;")+")'>Remove</button></div>"
+  ).join("");
+ }
+}
+
+
+/* HOME DASHBOARD */
+
+function renderHome(){
+ $("homeEntries").textContent=entries().length;
+ $("homeFavourites").textContent=get(KEY.favourites,[]).length;
+ $("homeWater").textContent=get(KEY.water,{})[today()]||0;
+}
+
+
+/* INITIAL LOAD */
+
+renderProfile();
+renderDiary();
+renderOverview();
+renderFavourites();
+renderHome();
+
+</script>
+</body>
+</html>
